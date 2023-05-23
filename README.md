@@ -1,2 +1,2 @@
 # immugene1
-This repository is a dynamic tool for the analysis of TCR variation in CDR3 function.
+This repository is a dynamic tool for the analysis of TCR variation in CDR3 region.
