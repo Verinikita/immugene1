@@ -7,6 +7,8 @@
 #' @examples
 #'
 #'
+#'
+
 fun_prop<- function(data_list, T.name){
   if(T.name == "TRBGD") {
     #1FiltroIG de los datos completos
