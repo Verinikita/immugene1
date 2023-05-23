@@ -11,7 +11,7 @@
 #'
 fun_rich<- function(data_list, T.name){
   if(T.name == "TRX.nt") {
-    mmm<- purrr::map(data_list, ~ tidyr::separate(.x, V.name, c("V.name", "cloneIG"), sep = "IG"))
+    mmm<- purrr::map(data_list, ~ tidyr::separate(.x, allVHitsWithScore, c("allVHitsWithScore", "cloneIG"), sep = "IG"))
     #2 Filtro por los NA de la columna cloneIG
     df_CDR3filter <- lapply(mmm, function(x) x[which(is.na(x[,"cloneIG"])==TRUE), ])
     #3 Elimino la columna cloneIG
@@ -38,7 +38,7 @@ fun_rich<- function(data_list, T.name){
   }else if(T.name == "TRA.nt") {
     ###Ahora sumo TRAnt
     #1 Esta si me filtra los TRA en otra columna
-    filter1<- purrr::map(data_list, ~ tidyr::separate(.x, V.name, c("V.name", "cloneTRA"), sep = "TRA"))
+    filter1<- purrr::map(data_list, ~ tidyr::separate(.x, allVHitsWithScore, c("allVHitsWithScore", "cloneTRA"), sep = "TRA"))
     #2 Filtro por los NA de la columna cloneTRA
     df_CDR3filter <- lapply(filter1, function(x) x[which(is.na(x[,"cloneTRA"])==FALSE), ])
     #3 Sumo las filas para CDR3nt
@@ -62,7 +62,7 @@ fun_rich<- function(data_list, T.name){
   }else if(T.name == "TRB.nt") {
     ###Ahora sumo TRBnt
     #1 Esta si me filtra los TRB en otra columna
-    filter1<- purrr::map(data_list, ~ tidyr::separate(.x, V.name, c("V.name", "cloneTRB"), sep = "TRB"))
+    filter1<- purrr::map(data_list, ~ tidyr::separate(.x, allVHitsWithScore, c("allVHitsWithScore", "cloneTRB"), sep = "TRB"))
     #2 Filtro por los NA de la columna cloneTRA
     df_CDR3filter <- lapply(filter1, function(x) x[which(is.na(x[,"cloneTRB"])==FALSE), ])
     #3 Sumo las filas para CDR3nt
@@ -86,7 +86,7 @@ fun_rich<- function(data_list, T.name){
   }else if(T.name == "TRG.nt") {
     ###Ahora sumo TRGnt
     #1 Esta si me filtra los TRG en otra columna
-    filter1<- purrr::map(data_list, ~ tidyr::separate(.x, V.name, c("V.name", "cloneTRG"), sep = "TRG"))
+    filter1<- purrr::map(data_list, ~ tidyr::separate(.x, allVHitsWithScore, c("allVHitsWithScore", "cloneTRG"), sep = "TRG"))
     #2 Filtro por los NA de la columna cloneTRA
     df_CDR3filter <- lapply(filter1, function(x) x[which(is.na(x[,"cloneTRG"])==FALSE), ])
     #3 Sumo las filas para CDR3nt
@@ -110,7 +110,7 @@ fun_rich<- function(data_list, T.name){
   }else if(T.name == "TRD.nt") {
     ###Ahora sumo TRDnt
     #1 Esta si me filtra los TRA en otra columna
-    filter1<- purrr::map(data_list, ~ tidyr::separate(.x, V.name, c("V.name", "cloneTRD"), sep = "TRD"))
+    filter1<- purrr::map(data_list, ~ tidyr::separate(.x, allVHitsWithScore, c("allVHitsWithScore", "cloneTRD"), sep = "TRD"))
     #2 Filtro por los NA de la columna cloneTRD
     df_CDR3filter <- lapply(filter1, function(x) x[which(is.na(x[,"cloneTRD"])==FALSE), ])
     #3 Sumo las filas para CDR3nt
@@ -132,7 +132,7 @@ fun_rich<- function(data_list, T.name){
     richness_TRD_CDR3nt["Sample"]<- row.names(richness_TRD_CDR3nt)
     richness_TRD_CDR3nt
   }else if(T.name == "TRX.aa") {
-    filter1<- purrr::map(data_list, ~ tidyr::separate(.x, V.name, c("V.name", "cloneIG"), sep = "IG"))
+    filter1<- purrr::map(data_list, ~ tidyr::separate(.x, allVHitsWithScore, c("allVHitsWithScore", "cloneIG"), sep = "IG"))
     m2 <- lapply(filter1, function(x) x[which(is.na(x[,"cloneIG"])==TRUE), ])
     m3 <- purrr::map(m2, ~ dplyr::select(.x,-one_of(c("cloneIG"))))  #elimino la columna otros creada arriba para separar clonotypos
     m4<- purrr::map(m3, ~ tidyr::separate(.x, CDR3.aa, c("CDR3.aa", "cl"), sep = "\\~|\\*"))
@@ -155,12 +155,12 @@ fun_rich<- function(data_list, T.name){
     richness_TRX_CDR3aa["Sample"]<- row.names(richness_TRX_CDR3aa)
     richness_TRX_CDR3aa
   }else if(T.name == "TRA.aa") {
-    filter1<- purrr::map(data_list, ~ tidyr::separate(.x, V.name, c("V.name", "cloneIG"), sep = "IG"))
+    filter1<- purrr::map(data_list, ~ tidyr::separate(.x, allVHitsWithScore, c("allVHitsWithScore", "cloneIG"), sep = "IG"))
     m2 <- lapply(filter1, function(x) x[which(is.na(x[,"cloneIG"])==TRUE), ])
     m3 <- purrr::map(m2, ~ dplyr::select(.x,-one_of(c("cloneIG"))))  #elimino la columna otros creada arriba para separar clonotypos
     m4 <- purrr::map(m3, ~ tidyr::separate(.x, CDR3.aa, c("CDR3.aa", "cl"), sep = "\\~|\\*"))
     m5 <- lapply(m4, function(x) x[which(is.na(x[,"cl"])==TRUE), ])
-    m6 <- purrr::map(m5, ~ tidyr::separate(.x, V.name, c("V.name", "cloneTRA"), sep = "TRA"))
+    m6 <- purrr::map(m5, ~ tidyr::separate(.x, allVHitsWithScore, c("allVHitsWithScore", "cloneTRA"), sep = "TRA"))
     m7 <- lapply(m6, function(x) x[which(is.na(x[,"cloneTRA"])==FALSE), ])
     da_CDR3aa_filterim<- purrr::map(m7,  ~ dplyr::group_by(.x, CDR3.aa) %>% dplyr::summarize(cont=dplyr::n())) #Tiene en cuenta los unique para cada secuencia CDR3aa si esta 2 veces n=2
     #5 Cambio el nombre de la columna 2 = count  por la lista de nombres
@@ -182,12 +182,12 @@ fun_rich<- function(data_list, T.name){
     richness_TRA_CDR3aa
 
   }else if(T.name == "TRB.aa") {
-    filter1<- purrr::map(data_list, ~ tidyr::separate(.x, V.name, c("V.name", "cloneIG"), sep = "IG"))
+    filter1<- purrr::map(data_list, ~ tidyr::separate(.x, allVHitsWithScore, c("allVHitsWithScore", "cloneIG"), sep = "IG"))
     m2 <- lapply(filter1, function(x) x[which(is.na(x[,"cloneIG"])==TRUE), ])
     m3 <- purrr::map(m2, ~ dplyr::select(.x,-one_of(c("cloneIG"))))  #elimino la columna otros creada arriba para separar clonotypos
     m4 <- purrr::map(m3, ~ tidyr::separate(.x, CDR3.aa, c("CDR3.aa", "cl"), sep = "\\~|\\*"))
     m5 <- lapply(m4, function(x) x[which(is.na(x[,"cl"])==TRUE), ])
-    m6 <- purrr::map(m5, ~ tidyr::separate(.x, V.name, c("V.name", "cloneTRB"), sep = "TRB"))
+    m6 <- purrr::map(m5, ~ tidyr::separate(.x, allVHitsWithScore, c("allVHitsWithScore", "cloneTRB"), sep = "TRB"))
     m7 <- lapply(m6, function(x) x[which(is.na(x[,"cloneTRB"])==FALSE), ])
     da_CDR3aa_filterim<- purrr::map(m7,  ~ dplyr::group_by(.x, CDR3.aa) %>% dplyr::summarize(cont=dplyr::n())) #Tiene en cuenta los unique para cada secuencia CDR3aa si esta 2 veces n=2
     #5 Cambio el nombre de la columna 2 = count  por la lista de nombres
@@ -208,12 +208,12 @@ fun_rich<- function(data_list, T.name){
     richness_TRB_CDR3aa
 
   }else if(T.name == "TRG.aa") {
-    filter1<- purrr::map(data_list, ~ tidyr::separate(.x, V.name, c("V.name", "cloneIG"), sep = "IG"))
+    filter1<- purrr::map(data_list, ~ tidyr::separate(.x, allVHitsWithScore, c("allVHitsWithScore", "cloneIG"), sep = "IG"))
     m2 <- lapply(filter1, function(x) x[which(is.na(x[,"cloneIG"])==TRUE), ])
     m3 <- purrr::map(m2, ~ dplyr::select(.x,-one_of(c("cloneIG"))))  #elimino la columna otros creada arriba para separar clonotypos
     m4 <- purrr::map(m3, ~ tidyr::separate(.x, CDR3.aa, c("CDR3.aa", "cl"), sep = "\\~|\\*"))
     m5 <- lapply(m4, function(x) x[which(is.na(x[,"cl"])==TRUE), ])
-    m6 <- purrr::map(m5, ~ tidyr::separate(.x, V.name, c("V.name", "cloneTRG"), sep = "TRG"))
+    m6 <- purrr::map(m5, ~ tidyr::separate(.x, allVHitsWithScore, c("allVHitsWithScore", "cloneTRG"), sep = "TRG"))
     m7 <- lapply(m6, function(x) x[which(is.na(x[,"cloneTRG"])==FALSE), ])
     da_CDR3aa_filterim<- purrr::map(m7,  ~ dplyr::group_by(.x, CDR3.aa) %>% dplyr::summarize(cont=dplyr::n())) #Tiene en cuenta los unique para cada secuencia CDR3aa si esta 2 veces n=2
     #5 Cambio el nombre de la columna 2 = count  por la lista de nombres
@@ -233,12 +233,12 @@ fun_rich<- function(data_list, T.name){
     richness_TRG_CDR3aa["Sample"]<- row.names(richness_TRG_CDR3aa)
     richness_TRG_CDR3aa
   }else if(T.name == "TRD.aa") {
-    filter1<- purrr::map(data_list, ~ tidyr::separate(.x, V.name, c("V.name", "cloneIG"), sep = "IG"))
+    filter1<- purrr::map(data_list, ~ tidyr::separate(.x, allVHitsWithScore, c("allVHitsWithScore", "cloneIG"), sep = "IG"))
     m2 <- lapply(filter1, function(x) x[which(is.na(x[,"cloneIG"])==TRUE), ])
     m3 <- purrr::map( m2, ~ dplyr::select(.x,-one_of(c("cloneIG"))))  #elimino la columna otros creada arriba para separar clonotypos
     m4 <- purrr::map( m3, ~ tidyr::separate(.x, CDR3.aa, c("CDR3.aa", "cl"), sep = "\\~|\\*"))
     m5 <- lapply( m4, function(x) x[which(is.na(x[,"cl"])==TRUE), ])
-    m6 <- purrr::map( m5, ~ tidyr::separate(.x, V.name, c("V.name", "cloneTRD"), sep = "TRD"))
+    m6 <- purrr::map( m5, ~ tidyr::separate(.x, allVHitsWithScore, c("allVHitsWithScore", "cloneTRD"), sep = "TRD"))
     m7 <- lapply( m6, function(x) x[which(is.na(x[,"cloneTRD"])==FALSE), ])
     da_CDR3aa_filterim<- purrr::map( m7,  ~ dplyr::group_by(.x, CDR3.aa) %>% dplyr::summarize(cont=dplyr::n())) #Tiene en cuenta los unique para cada secuencia CDR3aa si esta 2 veces n=2
     #5 Cambio el nombre de la columna 2 = count  por la lista de nombres

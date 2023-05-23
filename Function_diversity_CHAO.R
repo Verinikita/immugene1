@@ -25,14 +25,14 @@ divCHAO<- function(data_list, column){
       chao1<-(so + s1^2/(s2 * 2))}
 
   if(column == "TRX.aa") {
-    immudata$m1<- purrr::map(data_list, ~ tidyr::separate(.x, V.name, c("V.name", "cloneIG"), sep = "IG"))
-    immudata$m2 <- lapply(immudata$m1, function(x) x[which(is.na(x[,"cloneIG"])==TRUE), ])
-    immudata$m3 <- purrr::map(immudata$m2, ~ dplyr::select(.x,-one_of(c("cloneIG"))))  #elimino la columna otros creada arriba para separar clonotypos
-    immudata$m4<- purrr::map(immudata$m3, ~ tidyr::separate(.x, CDR3.aa, c("CDR3.aa", "cl"), sep = "\\~|\\*"))
-    immudata$m5 <- lapply(immudata$m4, function(x) x[which(is.na(x[,"cl"])==TRUE), ])
-    da_CDR3aa_filterim<- purrr::map(immudata$m5,  ~ dplyr::group_by(.x, CDR3.aa) %>% dplyr::count(CDR3.aa, wt = Clones))
+    m1<- purrr::map(data_list, ~ tidyr::separate(.x, V.name, c("V.name", "cloneIG"), sep = "IG"))
+    m2 <- lapply(m1, function(x) x[which(is.na(x[,"cloneIG"])==TRUE), ])
+    m3 <- purrr::map(m2, ~ dplyr::select(.x,-one_of(c("cloneIG"))))  #elimino la columna otros creada arriba para separar clonotypos
+    m4<- purrr::map(m3, ~ tidyr::separate(.x, CDR3.aa, c("CDR3.aa", "cl"), sep = "\\~|\\*"))
+    m5 <- lapply(m4, function(x) x[which(is.na(x[,"cl"])==TRUE), ])
+    da_CDR3aa_filterim<- purrr::map(m5,  ~ dplyr::group_by(.x, CDR3.aa) %>% dplyr::count(CDR3.aa, wt = Clones))
     #Cambio el nombre de la columna 2 = count  por la lista de nombres
-    immudata$data_fiter <-
+    data_fiter <-
       lapply(names(da_CDR3aa_filterim), function(i){
         x <- da_CDR3aa_filterim[[ i ]]
         # cambiar el nombre de la segunda columna
@@ -41,7 +41,7 @@ divCHAO<- function(data_list, column){
         x
       })
     #ingreso la lista de dataframes
-    data_conteoff<- immudata$data_fiter
+    data_conteoff<- data_fiter
     df6 <- lapply(1:length(data_conteoff), function(i){
       if (lengths(data_conteoff[[i]][2]) >= 1){
 
@@ -70,12 +70,12 @@ divCHAO<- function(data_list, column){
     }
     purrr::map_dfr(list(df1), dplyr::bind_rows)
   }else if(column == "TRX.nt"){
-    immudata$m1<- purrr::map(data_list, ~ tidyr::separate(.x, V.name, c("V.name", "cloneIG"), sep = "IG"))
-    immudata$m2 <- lapply(immudata$m1, function(x) x[which(is.na(x[,"cloneIG"])==TRUE), ])
-    immudata$m3 <- purrr::map(immudata$m2, ~ dplyr::select(.x,-one_of(c("cloneIG"))))  #elimino la columna otros creada arriba para separar clonotypos
+    m1<- purrr::map(data_list, ~ tidyr::separate(.x, V.name, c("V.name", "cloneIG"), sep = "IG"))
+    m2 <- lapply(m1, function(x) x[which(is.na(x[,"cloneIG"])==TRUE), ])
+    m3 <- purrr::map(m2, ~ dplyr::select(.x,-one_of(c("cloneIG"))))  #elimino la columna otros creada arriba para separar clonotypos
 
     #ingreso la lista de dataframes
-    muestra2<- immudata$m3
+    muestra2<- m3
     df11 = data.frame()
     for (i in 1:length(muestra2)) {
       # Calcular la diversidad con Chao1 para la muestra i
@@ -87,14 +87,14 @@ divCHAO<- function(data_list, column){
     purrr::map_dfr(list(df11), dplyr::bind_rows)
 
   }else if(column == "TRA.nt"){
-    immudata$m1<- purrr::map(data_list, ~ tidyr::separate(.x, V.name, c("V.name", "cloneIG"), sep = "IG"))
-    immudata$m2 <- lapply(immudata$m1, function(x) x[which(is.na(x[,"cloneIG"])==TRUE), ])
-    immudata$m3 <- purrr::map(immudata$m2, ~ dplyr::select(.x,-one_of(c("cloneIG"))))  #elimino la columna otros creada arriba para separar clonotypos
-    immudata$m4<- purrr::map(immudata$m3, ~ tidyr::separate(.x, V.name, c("V.name", "cloneTRA"), sep = "TRA"))
-    immudata$m5 <- lapply(immudata$m4, function(x) x[which(is.na(x[ ,("cloneTRA")])==FALSE), ])
+    m1<- purrr::map(data_list, ~ tidyr::separate(.x, V.name, c("V.name", "cloneIG"), sep = "IG"))
+    m2 <- lapply(m1, function(x) x[which(is.na(x[,"cloneIG"])==TRUE), ])
+    m3 <- purrr::map(m2, ~ dplyr::select(.x,-one_of(c("cloneIG"))))  #elimino la columna otros creada arriba para separar clonotypos
+    m4<- purrr::map(m3, ~ tidyr::separate(.x, V.name, c("V.name", "cloneTRA"), sep = "TRA"))
+    m5 <- lapply(m4, function(x) x[which(is.na(x[ ,("cloneTRA")])==FALSE), ])
 
     #ingreso la lista de dataframes
-    muestra5<- immudata$m5
+    muestra5<- m5
     div_TRA_nt = data.frame()
     for (i in 1:length(muestra5)) {
       # Calcular la diversidad con Chao1 para la muestra i
@@ -105,13 +105,13 @@ divCHAO<- function(data_list, column){
     }
     return(div_TRA_nt)
   }else if(column == "TRA.aa"){
-    immudata$m4<- purrr::map(data_list, ~ tidyr::separate(.x, CDR3.aa, c("CDR3.aa", "cl"), sep = "\\~|\\*"))
-    immudata$m5 <- lapply(immudata$m4, function(x) x[which(is.na(x[,"cl"])==TRUE), ])
-    immudata$m6<- purrr::map(immudata$m5, ~ tidyr::separate(.x, V.name, c("V.name", "cloneTRA"), sep = "TRA"))
-    immudata$m7 <- lapply(immudata$m6, function(x) x[which(is.na(x[ ,("cloneTRA")])==FALSE), ])
-    da_CDR3aa_filterim<- purrr::map(immudata$m7,  ~ dplyr::group_by(.x, CDR3.aa) %>% dplyr::count(CDR3.aa, wt = Clones))
+    m4<- purrr::map(data_list, ~ tidyr::separate(.x, CDR3.aa, c("CDR3.aa", "cl"), sep = "\\~|\\*"))
+    m5 <- lapply(m4, function(x) x[which(is.na(x[,"cl"])==TRUE), ])
+    m6<- purrr::map(m5, ~ tidyr::separate(.x, V.name, c("V.name", "cloneTRA"), sep = "TRA"))
+    m7 <- lapply(m6, function(x) x[which(is.na(x[ ,("cloneTRA")])==FALSE), ])
+    da_CDR3aa_filterim<- purrr::map(m7,  ~ dplyr::group_by(.x, CDR3.aa) %>% dplyr::count(CDR3.aa, wt = Clones))
     #Cambio el nombre de la columna 2 = count  por la lista de nombres
-    immudata$data_fiter <-
+    data_fiter <-
       lapply(names(da_CDR3aa_filterim), function(i){
         x <- da_CDR3aa_filterim[[ i ]]
         # cambiar el nombre de la segunda columna
@@ -120,7 +120,7 @@ divCHAO<- function(data_list, column){
         x
       })
     #ingreso la lista de dataframes
-    data_conteoff<- immudata$data_fiter
+    data_conteoff<- data_fiter
     df6 <- lapply(1:length(data_conteoff), function(i){
       if (lengths(data_conteoff[[i]][2]) >= 1){
         # Calcular la diversidad con Chao1 para la muestra i
@@ -137,14 +137,14 @@ divCHAO<- function(data_list, column){
     purrr::map_dfr(list(df6), dplyr::bind_rows)
 
   }else if(column == "TRB.nt"){
-    immudata$m1<- purrr::map(data_list, ~ tidyr::separate(.x, V.name, c("V.name", "cloneIG"), sep = "IG"))
-    immudata$m2 <- lapply(immudata$m1, function(x) x[which(is.na(x[,"cloneIG"])==TRUE), ])
-    immudata$m3 <- purrr::map(immudata$m2, ~ dplyr::select(.x,-one_of(c("cloneIG"))))  #elimino la columna otros creada arriba para separar clonotypos
-    immudata$m4<- purrr::map(immudata$m3, ~ tidyr::separate(.x, V.name, c("V.name", "cloneTRB"), sep = "TRB"))
-    immudata$m5 <- lapply(immudata$m4, function(x) x[which(is.na(x[ ,("cloneTRB")])==FALSE), ])
+    m1<- purrr::map(data_list, ~ tidyr::separate(.x, V.name, c("V.name", "cloneIG"), sep = "IG"))
+    m2 <- lapply(m1, function(x) x[which(is.na(x[,"cloneIG"])==TRUE), ])
+    m3 <- purrr::map(m2, ~ dplyr::select(.x,-one_of(c("cloneIG"))))  #elimino la columna otros creada arriba para separar clonotypos
+    m4<- purrr::map(m3, ~ tidyr::separate(.x, V.name, c("V.name", "cloneTRB"), sep = "TRB"))
+    m5 <- lapply(m4, function(x) x[which(is.na(x[ ,("cloneTRB")])==FALSE), ])
     #Cambio el nombre de la columna 2 = count  por la lista de nombres
-    da_CDR3aa_filterim<- immudata$m5
-    immudata$data_fiter <-
+    da_CDR3aa_filterim<- m5
+    data_fiter <-
       lapply(names(da_CDR3aa_filterim), function(i){
         x <- da_CDR3aa_filterim[[ i ]]
         # cambiar el nombre de la segunda columna
@@ -153,7 +153,7 @@ divCHAO<- function(data_list, column){
         x
       })
     #ingreso la lista de dataframes
-    data_conteoff<- immudata$data_fiter
+    data_conteoff<- data_fiter
     df6 <- lapply(1:length(data_conteoff), function(i){
       if (lengths(data_conteoff[[i]][2]) >= 1){
         # Calcular la diversidad con Chao1 para la muestra i
@@ -169,13 +169,13 @@ divCHAO<- function(data_list, column){
     purrr::map_dfr(list(df6), dplyr::bind_rows)
 
   }else if(column == "TRB.aa"){
-    immudata$m4<- purrr::map(data_list, ~ tidyr::separate(.x, CDR3.aa, c("CDR3.aa", "cl"), sep = "\\~|\\*"))
-    immudata$m5 <- lapply(immudata$m4, function(x) x[which(is.na(x[,"cl"])==TRUE), ])
-    immudata$m6<- purrr::map(immudata$m5, ~ tidyr::separate(.x, V.name, c("V.name", "cloneTRB"), sep = "TRB"))
-    immudata$m7 <- lapply(immudata$m6, function(x) x[which(is.na(x[ ,("cloneTRB")])==FALSE), ])
-    da_CDR3aa_filterim<- purrr::map(immudata$m7,  ~ dplyr::group_by(.x, CDR3.aa) %>% dplyr::count(CDR3.aa, wt = Clones))
+    m4<- purrr::map(data_list, ~ tidyr::separate(.x, CDR3.aa, c("CDR3.aa", "cl"), sep = "\\~|\\*"))
+    m5 <- lapply(m4, function(x) x[which(is.na(x[,"cl"])==TRUE), ])
+    m6<- purrr::map(m5, ~ tidyr::separate(.x, V.name, c("V.name", "cloneTRB"), sep = "TRB"))
+    m7 <- lapply(m6, function(x) x[which(is.na(x[ ,("cloneTRB")])==FALSE), ])
+    da_CDR3aa_filterim<- purrr::map(m7,  ~ dplyr::group_by(.x, CDR3.aa) %>% dplyr::count(CDR3.aa, wt = Clones))
     #Cambio el nombre de la columna 2 = count  por la lista de nombres
-    immudata$data_fiter <-
+    data_fiter <-
       lapply(names(da_CDR3aa_filterim), function(i){
         x <- da_CDR3aa_filterim[[ i ]]
         # cambiar el nombre de la segunda columna
@@ -184,7 +184,7 @@ divCHAO<- function(data_list, column){
         x
       })
     #ingreso la lista de dataframes
-    data_conteoff<- immudata$data_fiter
+    data_conteoff<- data_fiter
     df6 <- lapply(1:length(data_conteoff), function(i){
       if (lengths(data_conteoff[[i]][2]) >= 1){
         # Calcular la diversidad con Chao1 para la muestra i
@@ -200,14 +200,14 @@ divCHAO<- function(data_list, column){
 
     purrr::map_dfr(list(df6), dplyr::bind_rows)
   }else if(column == "TRG.nt"){
-    immudata$m1<- purrr::map(data_list, ~ tidyr::separate(.x, V.name, c("V.name", "cloneIG"), sep = "IG"))
-    immudata$m2 <- lapply(immudata$m1, function(x) x[which(is.na(x[,"cloneIG"])==TRUE), ])
-    immudata$m3 <- purrr::map(immudata$m2, ~ dplyr::select(.x,-one_of(c("cloneIG"))))  #elimino la columna otros creada arriba para separar clonotypos
-    immudata$m4<- purrr::map(immudata$m3, ~ tidyr::separate(.x, V.name, c("V.name", "cloneTRG"), sep = "TRG"))
-    da_CDR3aa_filterim <- lapply(immudata$m4, function(x) x[which(is.na(x[ ,("cloneTRG")])==FALSE), ])
+    m1<- purrr::map(data_list, ~ tidyr::separate(.x, V.name, c("V.name", "cloneIG"), sep = "IG"))
+    m2 <- lapply(m1, function(x) x[which(is.na(x[,"cloneIG"])==TRUE), ])
+    m3 <- purrr::map(m2, ~ dplyr::select(.x,-one_of(c("cloneIG"))))  #elimino la columna otros creada arriba para separar clonotypos
+    m4<- purrr::map(m3, ~ tidyr::separate(.x, V.name, c("V.name", "cloneTRG"), sep = "TRG"))
+    da_CDR3aa_filterim <- lapply(m4, function(x) x[which(is.na(x[ ,("cloneTRG")])==FALSE), ])
     #Cambio el nombre de la columna 2 = count  por la lista de nombres
 
-    immudata$data_fiter <-
+    data_fiter <-
       lapply(names(da_CDR3aa_filterim), function(i){
         x <- da_CDR3aa_filterim[[ i ]]
         # cambiar el nombre de la segunda columna
@@ -216,7 +216,7 @@ divCHAO<- function(data_list, column){
         x
         })
     #ingreso la lista de dataframes
-    data_conteoff<- immudata$data_fiter
+    data_conteoff<- data_fiter
     df6 <- lapply(1:length(data_conteoff), function(i){
       if (lengths(data_conteoff[[i]][2]) >= 1){
         # Calcular la diversidad con Chao1 para la muestra i
@@ -231,13 +231,13 @@ divCHAO<- function(data_list, column){
     })
     purrr::map_dfr(list(df6), dplyr::bind_rows)
   }else if(column == "TRG.aa"){
-    immudata$m4<- purrr::map(data_list, ~ tidyr::separate(.x, CDR3.aa, c("CDR3.aa", "cl"), sep = "\\~|\\*"))
-    immudata$m5 <- lapply(immudata$m4, function(x) x[which(is.na(x[,"cl"])==TRUE), ])
-    immudata$m6<- purrr::map(immudata$m5, ~ tidyr::separate(.x, V.name, c("V.name", "cloneTRG"), sep = "TRG"))
-    immudata$m7 <- lapply(immudata$m6, function(x) x[which(is.na(x[ ,("cloneTRG")])==FALSE), ])
-    da_CDR3aa_filterim<- purrr::map(immudata$m7,  ~ dplyr::group_by(.x, CDR3.aa) %>% dplyr::count(CDR3.aa, wt = Clones))
+    m4<- purrr::map(data_list, ~ tidyr::separate(.x, CDR3.aa, c("CDR3.aa", "cl"), sep = "\\~|\\*"))
+    m5 <- lapply(m4, function(x) x[which(is.na(x[,"cl"])==TRUE), ])
+    m6<- purrr::map(m5, ~ tidyr::separate(.x, V.name, c("V.name", "cloneTRG"), sep = "TRG"))
+    m7 <- lapply(m6, function(x) x[which(is.na(x[ ,("cloneTRG")])==FALSE), ])
+    da_CDR3aa_filterim<- purrr::map(m7,  ~ dplyr::group_by(.x, CDR3.aa) %>% dplyr::count(CDR3.aa, wt = Clones))
     #Cambio el nombre de la columna 2 = count  por la lista de nombres
-    immudata$data_fiter <-
+    data_fiter <-
       lapply(names(da_CDR3aa_filterim), function(i){
         x <- da_CDR3aa_filterim[[ i ]]
         # cambiar el nombre de la segunda columna
@@ -246,7 +246,7 @@ divCHAO<- function(data_list, column){
         x
       })
     #ingreso la lista de dataframes
-    data_conteoff<- immudata$data_fiter
+    data_conteoff<- data_fiter
     df6 <- lapply(1:length(data_conteoff), function(i){
       if (lengths(data_conteoff[[i]][2]) >= 1){
         # Calcular la diversidad con Chao1 para la muestra i
@@ -262,13 +262,13 @@ divCHAO<- function(data_list, column){
 
     purrr::map_dfr(list(df6), dplyr::bind_rows)
   }else if(column == "TRD.nt"){
-    immudata$m1<- purrr::map(data_list, ~ tidyr::separate(.x, V.name, c("V.name", "cloneIG"), sep = "IG"))
-    immudata$m2 <- lapply(immudata$m1, function(x) x[which(is.na(x[,"cloneIG"])==TRUE), ])
-    immudata$m3 <- purrr::map(immudata$m2, ~ dplyr::select(.x,-one_of(c("cloneIG"))))  #elimino la columna otros creada arriba para separar clonotypos
-    immudata$m4<- purrr::map(immudata$m3, ~ tidyr::separate(.x, V.name, c("V.name", "cloneTRD"), sep = "TRD"))
-    da_CDR3aa_filterim <- lapply(immudata$m4, function(x) x[which(is.na(x[ ,("cloneTRD")])==FALSE), ])
+    m1<- purrr::map(data_list, ~ tidyr::separate(.x, V.name, c("V.name", "cloneIG"), sep = "IG"))
+    m2 <- lapply(m1, function(x) x[which(is.na(x[,"cloneIG"])==TRUE), ])
+    m3 <- purrr::map(m2, ~ dplyr::select(.x,-one_of(c("cloneIG"))))  #elimino la columna otros creada arriba para separar clonotypos
+    m4<- purrr::map(m3, ~ tidyr::separate(.x, V.name, c("V.name", "cloneTRD"), sep = "TRD"))
+    da_CDR3aa_filterim <- lapply(m4, function(x) x[which(is.na(x[ ,("cloneTRD")])==FALSE), ])
     #Cambio el nombre de la columna 2 = count  por la lista de nombres
-    immudata$data_fiter <-
+    data_fiter <-
       lapply(names(da_CDR3aa_filterim), function(i){
         x <- da_CDR3aa_filterim[[ i ]]
         # cambiar el nombre de la segunda columna
@@ -277,7 +277,7 @@ divCHAO<- function(data_list, column){
         x
       })
     #ingreso la lista de dataframes
-    data_conteoff<- immudata$data_fiter
+    data_conteoff<- data_fiter
     df6 <- lapply(1:length(data_conteoff), function(i){
       if (lengths(data_conteoff[[i]][2]) >= 1){
         # Calcular la diversidad con Chao1 para la muestra i
@@ -292,13 +292,13 @@ divCHAO<- function(data_list, column){
     })
     purrr::map_dfr(list(df6), dplyr::bind_rows)
   }else if(column == "TRD.aa"){
-    immudata$m4<- purrr::map(data_list, ~ tidyr::separate(.x, CDR3.aa, c("CDR3.aa", "cl"), sep = "\\~|\\*"))
-    immudata$m5 <- lapply(immudata$m4, function(x) x[which(is.na(x[,"cl"])==TRUE), ])
-    immudata$m6<- purrr::map(immudata$m5, ~ tidyr::separate(.x, V.name, c("V.name", "cloneTRD"), sep = "TRD"))
-    immudata$m7 <- lapply(immudata$m6, function(x) x[which(is.na(x[ ,("cloneTRD")])==FALSE), ])
-    da_CDR3aa_filterim<- purrr::map(immudata$m7,  ~ dplyr::group_by(.x, CDR3.aa) %>% dplyr::count(CDR3.aa, wt = Clones))
+    m4<- purrr::map(data_list, ~ tidyr::separate(.x, CDR3.aa, c("CDR3.aa", "cl"), sep = "\\~|\\*"))
+    m5 <- lapply(m4, function(x) x[which(is.na(x[,"cl"])==TRUE), ])
+    m6<- purrr::map(m5, ~ tidyr::separate(.x, V.name, c("V.name", "cloneTRD"), sep = "TRD"))
+    m7 <- lapply(m6, function(x) x[which(is.na(x[ ,("cloneTRD")])==FALSE), ])
+    da_CDR3aa_filterim<- purrr::map(m7,  ~ dplyr::group_by(.x, CDR3.aa) %>% dplyr::count(CDR3.aa, wt = Clones))
     #Cambio el nombre de la columna 2 = count  por la lista de nombres
-    immudata$data_fiter <-
+    data_fiter <-
       lapply(names(da_CDR3aa_filterim), function(i){
         x <- da_CDR3aa_filterim[[ i ]]
         # cambiar el nombre de la segunda columna
@@ -307,7 +307,7 @@ divCHAO<- function(data_list, column){
         x
       })
     #ingreso la lista de dataframes
-    data_conteoff<- immudata$data_fiter
+    data_conteoff<- data_fiter
     df6 <- lapply(1:length(data_conteoff), function(i){
       if (lengths(data_conteoff[[i]][2]) >= 1){
         # Calcular la diversidad con Chao1 para la muestra i
