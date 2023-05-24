@@ -24,8 +24,8 @@ fun_prop<- function(data_list, T.name){
     data3<- purrr::map(data2,   ~ tidyr::separate(.x, V.name, c("V.name", "cloneTRD"), sep = "TRD"))
     data4<- purrr::map(data3,   ~ tidyr::separate(.x, V.name, c("V.name", "cloneTRB"), sep = "TRB"))
     #2 Filtro por los NA de la columna cloneTRBGyD Dejando todo
-    df_CD  <- lapply(data4, function(x) x[which(is.na(x[ ,("cloneTRD")])==TRUE), ]) #Esta queda con TRB y TRG
-    df_CD1 <- lapply(data4, function(x) x[which(is.na(x[ ,("cloneTRG")])==TRUE), ]) #Esta queda con TRB y TRD
+    df_CD  <- lapply(data4, function(x) x[which(is.na(x[ ,("cloneTRD")])==TRUE), ]) 
+    df_CD1 <- lapply(data4, function(x) x[which(is.na(x[ ,("cloneTRG")])==TRUE), ]) 
     df_CD2 <- lapply(data4, function(x) x[which(is.na(x[ ,("cloneTRB")])==F), ])
 
     data22<- NULL
@@ -53,7 +53,10 @@ fun_prop<- function(data_list, T.name){
         # colnames(data22[[i]]) <-c("cloneTRB","cloneTRGD","Proportions_BGyD")
       }
     }
-
+     
+    df_CD33 <- lapply(data22, function(x) x[which(is.na(x[ ,("cloneTRGD")])==FALSE), ])
+    df_CD55 <- lapply(data22, function(x) x[which(is.na(x[ ,("cloneTRB")])==FALSE), ])
+    
     data_fitB <- lapply(1:length(df_CD55), function(i){
       if (lengths(df_CD55[[i]]["Proportions_BGyD"]) >= 1){
         sum(df_CD55[[i]]["Proportions_BGyD"])
@@ -73,7 +76,7 @@ fun_prop<- function(data_list, T.name){
 
 
     #######################################
-    #Acomodo el dataframe para TRB
+    #Edit the dataframe TRB
     data_TCRB <- t(as.data.frame(data_fitB))
     Sample<- as.list(names(data4))
     colnames(data_TCRB)<- data.frame("Proportions_BGyD")
@@ -88,7 +91,7 @@ fun_prop<- function(data_list, T.name){
     colnames(data_TCRB_f4)<- "Proportions_TRB_GD"
     data_TCR_B<- cbind(data_TCRB_f4, "Sample"= data_TCRB_f5$Sample)
 
-    #Acomodo el dataframe para TRGD
+    #Edit the dataframe TRGD
     data_TCRGD <- t(as.data.frame(data_fitGD))
     Sample<- as.list(names(data4))
     colnames(data_TCRGD)<- data.frame("Proportion_M_TRGyD")
