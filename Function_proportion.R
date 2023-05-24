@@ -10,21 +10,21 @@
 #'
 fun_prop<- function(data_list, T.name){
   if(T.name == "TRBGD") {
-    #1FiltroIG de los datos completos
+    #
     data_TCR<- purrr::map(data_list, ~ tidyr::separate(.x, V.name, c("V.name", "cloneIG"), sep = "IG"))
-    #Borro las filas de IG
+    #
     df_TCR <- lapply(data_TCR, function(x) x[which(is.na(x[ ,("cloneIG")])==TRUE), ])
-    #1FiltroTRA de los datos sin IG
+    #
     data_TCRA<- purrr::map(df_TCR, ~ tidyr::separate(.x, V.name, c("V.name", "cloneTRA"), sep = "TRA"))
     #Borro las filas de cloneTRA con TRA
     df_TCRA <- lapply(data_TCRA, function(x) x[which(is.na(x[ ,("cloneTRA")])==TRUE), ])
-    #1 Esta si me filtra los TCRG y D en otra columna
+    #
     data2<- purrr::map(df_TCRA, ~ tidyr::separate(.x, V.name, c("V.name", "cloneTRG"), sep = "TRG"))
     data3<- purrr::map(data2,   ~ tidyr::separate(.x, V.name, c("V.name", "cloneTRD"), sep = "TRD"))
     data4<- purrr::map(data3,   ~ tidyr::separate(.x, V.name, c("V.name", "cloneTRB"), sep = "TRB"))
-    #2 Filtro por los NA de la columna cloneTRBGyD Dejando todo  
-    df_CD  <- lapply(data4, function(x) x[which(is.na(x[ ,("cloneTRD")])==TRUE), ]) #Esta queda con TRB y TRG
-    df_CD1 <- lapply(data4, function(x) x[which(is.na(x[ ,("cloneTRG")])==TRUE), ]) #Esta queda con TRB y TRD
+    #  
+    df_CD  <- lapply(data4, function(x) x[which(is.na(x[ ,("cloneTRD")])==TRUE), ]) 
+    df_CD1 <- lapply(data4, function(x) x[which(is.na(x[ ,("cloneTRG")])==TRUE), ]) 
     df_CD2 <- lapply(data4, function(x) x[which(is.na(x[ ,("cloneTRB")])==F), ])
     
     data22<- NULL
@@ -52,8 +52,8 @@ fun_prop<- function(data_list, T.name){
         # colnames(data22[[i]]) <-c("cloneTRB","cloneTRGD","Proportions_BGyD")
       }
     }
-    #2 Filtro por los NA de la columna cloneTRGyD Sacando todo
-    df_CD33 <- lapply(data22, function(x) x[which(is.na(x[ ,("cloneTRGD")])==FALSE), ]) #Esta queda con solo TRG
+    #
+    df_CD33 <- lapply(data22, function(x) x[which(is.na(x[ ,("cloneTRGD")])==FALSE), ]) 
     df_CD55 <- lapply(data22, function(x) x[which(is.na(x[ ,("cloneTRB")])==FALSE), ])
     
     data_fitB <- lapply(1:length(df_CD55), function(i){
@@ -75,7 +75,7 @@ fun_prop<- function(data_list, T.name){
     
     
     #######################################
-    #Acomodo el dataframe para TRB
+    #Editing dataframe TRB
     data_TCRB <- t(as.data.frame(data_fitB))
     Sample<- as.list(names(data4))
     colnames(data_TCRB)<- data.frame("Proportions_BGyD")
@@ -90,7 +90,7 @@ fun_prop<- function(data_list, T.name){
     colnames(data_TCRB_f4)<- "Proportions_TRB_GD"
     data_TCR_B<- cbind(data_TCRB_f4, "Sample"= data_TCRB_f5$Sample)
     
-    #Acomodo el dataframe para TRGD
+    #Editing dataframe TRGD
     data_TCRGD <- t(as.data.frame(data_fitGD))
     Sample<- as.list(names(data4))
     colnames(data_TCRGD)<- data.frame("Proportion_M_TRGyD")
@@ -107,11 +107,11 @@ fun_prop<- function(data_list, T.name){
     dataTCRBGD<-merge(data_TCR_B, data_TCR_GD, by = "Sample")
     return(dataTCRBGD)
   }else if(T.name == "TRX"){
-    #1FiltroIG de los datos completos
+    #Filter IG data
     data_TCR<- purrr::map(data_list, ~ tidyr::separate(.x, V.name, c("V.name", "cloneIG"), sep = "IG"))
-    #Borro las filas de IG
+    #Delete files of IG
     df_TCR <- lapply(data_TCR, function(x) x[which(is.na(x[ ,("cloneIG")])==TRUE), ])
-    #1FiltroTRA TRB TRG TRD de los datos sin IG
+    
     data1<- purrr::map(df_TCR, ~ tidyr::separate(.x, V.name, c("V.name", "cloneTRA"), sep = "TRA"))
     data2<- purrr::map(data1,  ~ tidyr::separate(.x, V.name, c("V.name", "cloneTRG"), sep = "TRG"))
     data3<- purrr::map(data2,  ~ tidyr::separate(.x, V.name, c("V.name", "cloneTRD"), sep = "TRD"))
@@ -133,8 +133,7 @@ fun_prop<- function(data_list, T.name){
         # colnames(data22[[i]]) <-c("cloneTRB","cloneTRGD","Proportions_BGyD")
       }
     }
-    #2 Filtro por los NA de la columna cloneTRGyD Sacando todo
-    #2 Filtro por los NA de la columna cloneTRBGyD Dejando todo
+   
     df_C    <- lapply(data22, function(x) x[which(is.na(x[ ,("cloneTRA")])==F), ])
     df_CD   <- lapply(data22, function(x) x[which(is.na(x[ ,("cloneTRB")])==F), ])
     df_CD1  <- lapply(data22, function(x) x[which(is.na(x[ ,("cloneTRG")])==F), ]) 
