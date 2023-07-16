@@ -12,7 +12,7 @@
 fun_prop<- function(data_list, T.name){
   if(T.name == "TRBGD") {
     #1FiltroIG de los datos completos
-    data_TCR<- purrr::map(data_list, ~ tidyr::separate(.x, allVHitsWithScore, c("allVHitsWithScore", "cloneIG"), sep = "IG"))
+    data_TCR<- purrr::map(data_list, ~ tidyr::separate(.x,  allVHitsWithScore, c("allVHitsWithScore", "cloneIG"), sep = "IG"))
     #Borro las filas de IG
     df_TCR <- lapply(data_TCR, function(x) x[which(is.na(x[ ,("cloneIG")])==TRUE), ])
     #1FiltroTRA de los datos sin IG
