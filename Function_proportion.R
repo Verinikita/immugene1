@@ -12,17 +12,17 @@
 fun_prop<- function(data_list, T.name){
   if(T.name == "TRBGD") {
     #1FiltroIG de los datos completos
-    data_TCR<- purrr::map(data_list, ~ tidyr::separate(.x, V.name, c("V.name", "cloneIG"), sep = "IG"))
+    data_TCR<- purrr::map(data_list, ~ tidyr::separate(.x, allVHitsWithScore, c("allVHitsWithScore", "cloneIG"), sep = "IG"))
     #Borro las filas de IG
     df_TCR <- lapply(data_TCR, function(x) x[which(is.na(x[ ,("cloneIG")])==TRUE), ])
     #1FiltroTRA de los datos sin IG
-    data_TCRA<- purrr::map(df_TCR, ~ tidyr::separate(.x, V.name, c("V.name", "cloneTRA"), sep = "TRA"))
+    data_TCRA<- purrr::map(df_TCR, ~ tidyr::separate(.x, allVHitsWithScore, c("allVHitsWithScore", "cloneTRA"), sep = "TRA"))
     #Borro las filas de cloneTRA con TRA
     df_TCRA <- lapply(data_TCRA, function(x) x[which(is.na(x[ ,("cloneTRA")])==TRUE), ])
     #1 Esta si me filtra los TCRG y D en otra columna
-    data2<- purrr::map(df_TCRA, ~ tidyr::separate(.x, V.name, c("V.name", "cloneTRG"), sep = "TRG"))
-    data3<- purrr::map(data2,   ~ tidyr::separate(.x, V.name, c("V.name", "cloneTRD"), sep = "TRD"))
-    data4<- purrr::map(data3,   ~ tidyr::separate(.x, V.name, c("V.name", "cloneTRB"), sep = "TRB"))
+    data2<- purrr::map(df_TCRA, ~ tidyr::separate(.x, allVHitsWithScore, c("allVHitsWithScore", "cloneTRG"), sep = "TRG"))
+    data3<- purrr::map(data2,   ~ tidyr::separate(.x, allVHitsWithScore, c("allVHitsWithScore", "cloneTRD"), sep = "TRD"))
+    data4<- purrr::map(data3,   ~ tidyr::separate(.x, allVHitsWithScore, c("allVHitsWithScore", "cloneTRB"), sep = "TRB"))
     #2 Filtro por los NA de la columna cloneTRBGyD Dejando todo
     df_CD  <- lapply(data4, function(x) x[which(is.na(x[ ,("cloneTRD")])==TRUE), ]) #Esta queda con TRB y TRG
     df_CD1 <- lapply(data4, function(x) x[which(is.na(x[ ,("cloneTRG")])==TRUE), ]) #Esta queda con TRB y TRD
