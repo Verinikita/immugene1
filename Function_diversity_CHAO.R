@@ -25,12 +25,12 @@ divCHAO<- function(data_list, column){
       chao1<-(so + s1^2/(s2 * 2))}
 
   if(column == "TRX.aa") {
-    m1<- purrr::map(data_list, ~ tidyr::separate(.x, V.name, c("V.name", "cloneIG"), sep = "IG"))
+    m1<- purrr::map(data_list, ~ tidyr::separate(.x, allVHitsWithScore, c("allVHitsWithScore", "cloneIG"), sep = "IG"))
     m2 <- lapply(m1, function(x) x[which(is.na(x[,"cloneIG"])==TRUE), ])
     m3 <- purrr::map(m2, ~ dplyr::select(.x,-one_of(c("cloneIG"))))  #elimino la columna otros creada arriba para separar clonotypos
-    m4<- purrr::map(m3, ~ tidyr::separate(.x, CDR3.aa, c("CDR3.aa", "cl"), sep = "\\~|\\*"))
+    m4<- purrr::map(m3, ~ tidyr::separate(.x, aaSeqCDR3, c("aaSeqCDR3", "cl"), sep = "\\~|\\*"))
     m5 <- lapply(m4, function(x) x[which(is.na(x[,"cl"])==TRUE), ])
-    da_CDR3aa_filterim<- purrr::map(m5,  ~ dplyr::group_by(.x, CDR3.aa) %>% dplyr::count(CDR3.aa, wt = Clones))
+    da_CDR3aa_filterim<- purrr::map(m5,  ~ dplyr::group_by(.x, aaSeqCDR3) %>% dplyr::count(aaSeqCDR3, wt = readCount))
     #Cambio el nombre de la columna 2 = count  por la lista de nombres
     data_fiter <-
       lapply(names(da_CDR3aa_filterim), function(i){
@@ -56,21 +56,21 @@ divCHAO<- function(data_list, column){
       }
 
     })
-   purrr::map_dfr(list(df6), dplyr::bind_rows)
+    purrr::map_dfr(list(df6), dplyr::bind_rows)
   }else if(column == "ntIG+TCR") {
     #ingreso la lista de dataframes
     muestra1<- data_list
     df1 = data.frame()
     for (i in 1:length(muestra1)) {
       # Calcular la diversidad con Chao1 para la muestra i
-      diversidad_chao1 <- calcular_diversidad_chao1(muestra1[[i]]$Clones)
+      diversidad_chao1 <- calcular_diversidad_chao1(muestra1[[i]]$readCount)
       # Crear un data frame con los valores de diversidad
       df_diversidad <- data.frame(Sample = names(muestra1[i]), diversity_ntIGTCR = diversidad_chao1)
       df1 = rbind(df1, df_diversidad)
     }
     purrr::map_dfr(list(df1), dplyr::bind_rows)
   }else if(column == "TRX.nt"){
-    m1<- purrr::map(data_list, ~ tidyr::separate(.x, V.name, c("V.name", "cloneIG"), sep = "IG"))
+    m1<- purrr::map(data_list, ~ tidyr::separate(.x, allVHitsWithScore, c("allVHitsWithScore", "cloneIG"), sep = "IG"))
     m2 <- lapply(m1, function(x) x[which(is.na(x[,"cloneIG"])==TRUE), ])
     m3 <- purrr::map(m2, ~ dplyr::select(.x,-one_of(c("cloneIG"))))  #elimino la columna otros creada arriba para separar clonotypos
 
@@ -79,7 +79,7 @@ divCHAO<- function(data_list, column){
     df11 = data.frame()
     for (i in 1:length(muestra2)) {
       # Calcular la diversidad con Chao1 para la muestra i
-      diversidad_chao1 <- calcular_diversidad_chao1(muestra2[[i]]$Clones)
+      diversidad_chao1 <- calcular_diversidad_chao1(muestra2[[i]]$readCount)
       # Crear un data frame con los valores de diversidad
       df_diversidad <- data.frame(Sample = names(muestra2[i]), diversity_nt = diversidad_chao1)
       df11 = rbind(df11, df_diversidad)
@@ -87,10 +87,10 @@ divCHAO<- function(data_list, column){
     purrr::map_dfr(list(df11), dplyr::bind_rows)
 
   }else if(column == "TRA.nt"){
-    m1<- purrr::map(data_list, ~ tidyr::separate(.x, V.name, c("V.name", "cloneIG"), sep = "IG"))
+    m1<- purrr::map(data_list, ~ tidyr::separate(.x, allVHitsWithScore, c("allVHitsWithScore", "cloneIG"), sep = "IG"))
     m2 <- lapply(m1, function(x) x[which(is.na(x[,"cloneIG"])==TRUE), ])
     m3 <- purrr::map(m2, ~ dplyr::select(.x,-one_of(c("cloneIG"))))  #elimino la columna otros creada arriba para separar clonotypos
-    m4<- purrr::map(m3, ~ tidyr::separate(.x, V.name, c("V.name", "cloneTRA"), sep = "TRA"))
+    m4<- purrr::map(m3, ~ tidyr::separate(.x, allVHitsWithScore, c("allVHitsWithScore", "cloneTRA"), sep = "TRA"))
     m5 <- lapply(m4, function(x) x[which(is.na(x[ ,("cloneTRA")])==FALSE), ])
 
     #ingreso la lista de dataframes
@@ -98,18 +98,18 @@ divCHAO<- function(data_list, column){
     div_TRA_nt = data.frame()
     for (i in 1:length(muestra5)) {
       # Calcular la diversidad con Chao1 para la muestra i
-      diversidad_chao1 <- calcular_diversidad_chao1(muestra5[[i]]$Clones)
+      diversidad_chao1 <- calcular_diversidad_chao1(muestra5[[i]]$readCount)
       # Crear un data frame con los valores de diversidad
       df_diversidad5 <- data.frame(Sample = names(muestra5[i]), diversity_ntTRA_sIG = diversidad_chao1)
       div_TRA_nt <- rbind(div_TRA_nt, df_diversidad5)
     }
     return(div_TRA_nt)
   }else if(column == "TRA.aa"){
-    m4<- purrr::map(data_list, ~ tidyr::separate(.x, CDR3.aa, c("CDR3.aa", "cl"), sep = "\\~|\\*"))
+    m4<- purrr::map(data_list, ~ tidyr::separate(.x, aaSeqCDR3, c("aaSeqCDR3", "cl"), sep = "\\~|\\*"))
     m5 <- lapply(m4, function(x) x[which(is.na(x[,"cl"])==TRUE), ])
-    m6<- purrr::map(m5, ~ tidyr::separate(.x, V.name, c("V.name", "cloneTRA"), sep = "TRA"))
+    m6<- purrr::map(m5, ~ tidyr::separate(.x, allVHitsWithScore, c("allVHitsWithScore", "cloneTRA"), sep = "TRA"))
     m7 <- lapply(m6, function(x) x[which(is.na(x[ ,("cloneTRA")])==FALSE), ])
-    da_CDR3aa_filterim<- purrr::map(m7,  ~ dplyr::group_by(.x, CDR3.aa) %>% dplyr::count(CDR3.aa, wt = Clones))
+    da_CDR3aa_filterim<- purrr::map(m7,  ~ dplyr::group_by(.x, aaSeqCDR3) %>% dplyr::count(aaSeqCDR3, wt = readCount))
     #Cambio el nombre de la columna 2 = count  por la lista de nombres
     data_fiter <-
       lapply(names(da_CDR3aa_filterim), function(i){
@@ -137,10 +137,10 @@ divCHAO<- function(data_list, column){
     purrr::map_dfr(list(df6), dplyr::bind_rows)
 
   }else if(column == "TRB.nt"){
-    m1<- purrr::map(data_list, ~ tidyr::separate(.x, V.name, c("V.name", "cloneIG"), sep = "IG"))
+    m1<- purrr::map(data_list, ~ tidyr::separate(.x, allVHitsWithScore, c("allVHitsWithScore", "cloneIG"), sep = "IG"))
     m2 <- lapply(m1, function(x) x[which(is.na(x[,"cloneIG"])==TRUE), ])
     m3 <- purrr::map(m2, ~ dplyr::select(.x,-one_of(c("cloneIG"))))  #elimino la columna otros creada arriba para separar clonotypos
-    m4<- purrr::map(m3, ~ tidyr::separate(.x, V.name, c("V.name", "cloneTRB"), sep = "TRB"))
+    m4<- purrr::map(m3, ~ tidyr::separate(.x, allVHitsWithScore, c("allVHitsWithScore", "cloneTRB"), sep = "TRB"))
     m5 <- lapply(m4, function(x) x[which(is.na(x[ ,("cloneTRB")])==FALSE), ])
     #Cambio el nombre de la columna 2 = count  por la lista de nombres
     da_CDR3aa_filterim<- m5
@@ -169,11 +169,11 @@ divCHAO<- function(data_list, column){
     purrr::map_dfr(list(df6), dplyr::bind_rows)
 
   }else if(column == "TRB.aa"){
-    m4<- purrr::map(data_list, ~ tidyr::separate(.x, CDR3.aa, c("CDR3.aa", "cl"), sep = "\\~|\\*"))
+    m4<- purrr::map(data_list, ~ tidyr::separate(.x, aaSeqCDR3, c("aaSeqCDR3", "cl"), sep = "\\~|\\*"))
     m5 <- lapply(m4, function(x) x[which(is.na(x[,"cl"])==TRUE), ])
-    m6<- purrr::map(m5, ~ tidyr::separate(.x, V.name, c("V.name", "cloneTRB"), sep = "TRB"))
+    m6<- purrr::map(m5, ~ tidyr::separate(.x, allVHitsWithScore, c("allVHitsWithScore", "cloneTRB"), sep = "TRB"))
     m7 <- lapply(m6, function(x) x[which(is.na(x[ ,("cloneTRB")])==FALSE), ])
-    da_CDR3aa_filterim<- purrr::map(m7,  ~ dplyr::group_by(.x, CDR3.aa) %>% dplyr::count(CDR3.aa, wt = Clones))
+    da_CDR3aa_filterim<- purrr::map(m7,  ~ dplyr::group_by(.x, aaSeqCDR3) %>% dplyr::count(aaSeqCDR3, wt = readCount))
     #Cambio el nombre de la columna 2 = count  por la lista de nombres
     data_fiter <-
       lapply(names(da_CDR3aa_filterim), function(i){
@@ -200,10 +200,10 @@ divCHAO<- function(data_list, column){
 
     purrr::map_dfr(list(df6), dplyr::bind_rows)
   }else if(column == "TRG.nt"){
-    m1<- purrr::map(data_list, ~ tidyr::separate(.x, V.name, c("V.name", "cloneIG"), sep = "IG"))
+    m1<- purrr::map(data_list, ~ tidyr::separate(.x, allVHitsWithScore, c("allVHitsWithScore", "cloneIG"), sep = "IG"))
     m2 <- lapply(m1, function(x) x[which(is.na(x[,"cloneIG"])==TRUE), ])
     m3 <- purrr::map(m2, ~ dplyr::select(.x,-one_of(c("cloneIG"))))  #elimino la columna otros creada arriba para separar clonotypos
-    m4<- purrr::map(m3, ~ tidyr::separate(.x, V.name, c("V.name", "cloneTRG"), sep = "TRG"))
+    m4<- purrr::map(m3, ~ tidyr::separate(.x, allVHitsWithScore, c("allVHitsWithScore", "cloneTRG"), sep = "TRG"))
     da_CDR3aa_filterim <- lapply(m4, function(x) x[which(is.na(x[ ,("cloneTRG")])==FALSE), ])
     #Cambio el nombre de la columna 2 = count  por la lista de nombres
 
@@ -214,7 +214,7 @@ divCHAO<- function(data_list, column){
         names(x)[2] <- i
         # devuelve
         x
-        })
+      })
     #ingreso la lista de dataframes
     data_conteoff<- data_fiter
     df6 <- lapply(1:length(data_conteoff), function(i){
@@ -231,11 +231,11 @@ divCHAO<- function(data_list, column){
     })
     purrr::map_dfr(list(df6), dplyr::bind_rows)
   }else if(column == "TRG.aa"){
-    m4<- purrr::map(data_list, ~ tidyr::separate(.x, CDR3.aa, c("CDR3.aa", "cl"), sep = "\\~|\\*"))
+    m4<- purrr::map(data_list, ~ tidyr::separate(.x, aaSeqCDR3, c("aaSeqCDR3", "cl"), sep = "\\~|\\*"))
     m5 <- lapply(m4, function(x) x[which(is.na(x[,"cl"])==TRUE), ])
-    m6<- purrr::map(m5, ~ tidyr::separate(.x, V.name, c("V.name", "cloneTRG"), sep = "TRG"))
+    m6<- purrr::map(m5, ~ tidyr::separate(.x, allVHitsWithScore, c("allVHitsWithScore", "cloneTRG"), sep = "TRG"))
     m7 <- lapply(m6, function(x) x[which(is.na(x[ ,("cloneTRG")])==FALSE), ])
-    da_CDR3aa_filterim<- purrr::map(m7,  ~ dplyr::group_by(.x, CDR3.aa) %>% dplyr::count(CDR3.aa, wt = Clones))
+    da_CDR3aa_filterim<- purrr::map(m7,  ~ dplyr::group_by(.x, aaSeqCDR3) %>% dplyr::count(aaSeqCDR3, wt = readCount))
     #Cambio el nombre de la columna 2 = count  por la lista de nombres
     data_fiter <-
       lapply(names(da_CDR3aa_filterim), function(i){
@@ -262,10 +262,10 @@ divCHAO<- function(data_list, column){
 
     purrr::map_dfr(list(df6), dplyr::bind_rows)
   }else if(column == "TRD.nt"){
-    m1<- purrr::map(data_list, ~ tidyr::separate(.x, V.name, c("V.name", "cloneIG"), sep = "IG"))
+    m1<- purrr::map(data_list, ~ tidyr::separate(.x, allVHitsWithScore, c("allVHitsWithScore", "cloneIG"), sep = "IG"))
     m2 <- lapply(m1, function(x) x[which(is.na(x[,"cloneIG"])==TRUE), ])
     m3 <- purrr::map(m2, ~ dplyr::select(.x,-one_of(c("cloneIG"))))  #elimino la columna otros creada arriba para separar clonotypos
-    m4<- purrr::map(m3, ~ tidyr::separate(.x, V.name, c("V.name", "cloneTRD"), sep = "TRD"))
+    m4<- purrr::map(m3, ~ tidyr::separate(.x, allVHitsWithScore, c("allVHitsWithScore", "cloneTRD"), sep = "TRD"))
     da_CDR3aa_filterim <- lapply(m4, function(x) x[which(is.na(x[ ,("cloneTRD")])==FALSE), ])
     #Cambio el nombre de la columna 2 = count  por la lista de nombres
     data_fiter <-
@@ -292,11 +292,11 @@ divCHAO<- function(data_list, column){
     })
     purrr::map_dfr(list(df6), dplyr::bind_rows)
   }else if(column == "TRD.aa"){
-    m4<- purrr::map(data_list, ~ tidyr::separate(.x, CDR3.aa, c("CDR3.aa", "cl"), sep = "\\~|\\*"))
+    m4<- purrr::map(data_list, ~ tidyr::separate(.x, aaSeqCDR3, c("aaSeqCDR3", "cl"), sep = "\\~|\\*"))
     m5 <- lapply(m4, function(x) x[which(is.na(x[,"cl"])==TRUE), ])
-    m6<- purrr::map(m5, ~ tidyr::separate(.x, V.name, c("V.name", "cloneTRD"), sep = "TRD"))
+    m6<- purrr::map(m5, ~ tidyr::separate(.x, allVHitsWithScore, c("allVHitsWithScore", "cloneTRD"), sep = "TRD"))
     m7 <- lapply(m6, function(x) x[which(is.na(x[ ,("cloneTRD")])==FALSE), ])
-    da_CDR3aa_filterim<- purrr::map(m7,  ~ dplyr::group_by(.x, CDR3.aa) %>% dplyr::count(CDR3.aa, wt = Clones))
+    da_CDR3aa_filterim<- purrr::map(m7,  ~ dplyr::group_by(.x, aaSeqCDR3) %>% dplyr::count(aaSeqCDR3, wt = readCount))
     #Cambio el nombre de la columna 2 = count  por la lista de nombres
     data_fiter <-
       lapply(names(da_CDR3aa_filterim), function(i){
