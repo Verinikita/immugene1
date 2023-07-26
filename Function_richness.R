@@ -11,7 +11,7 @@
 #'
 fun_rich<- function(data_list, T.name){
   if(T.name == "TRX.nt") {
-    mmm<- purrr::map(data_list,  ~ tidyr::separate(.x, allVHitsWithScore, c("allVHitsWithScore", "cloneIG"), sep = "IG"))
+    mmm<- purrr::map(data_list, ~ tidyr::separate(.x, allVHitsWithScore, c("allVHitsWithScore", "cloneIG"), sep = "IG"))
     #2 Filtro por los NA de la columna cloneIG
     df_CDR3filter <- lapply(mmm, function(x) x[which(is.na(x[,"cloneIG"])==TRUE), ])
     #3 Elimino la columna cloneIG
