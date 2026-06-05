@@ -1,0 +1,300 @@
+fun_count<- function(data_list, column){
+
+  #1FiltroIG de los datos completos
+  data_TCR<- purrr::map(data_list, ~ tidyr::separate(.x,  allVHitsWithScore, c("allVHitsWithScore", "cloneIG"), sep = "IG"))
+  df_TCR <- lapply(data_TCR, function(x) x[which(is.na(x[ ,("cloneIG")])==TRUE), ])
+  data1<- purrr::map(df_TCR, ~ tidyr::separate(.x, allVHitsWithScore, c("allVHitsWithScore", "cloneTRA"), sep = "TRA"))
+  data2<- purrr::map(data1,  ~ tidyr::separate(.x, allVHitsWithScore, c("allVHitsWithScore", "cloneTRB"), sep = "TRB"))
+  data3<- purrr::map(data2,  ~ tidyr::separate(.x, allVHitsWithScore, c("allVHitsWithScore", "cloneTRG"), sep = "TRG"))
+  data4<- purrr::map(data3,  ~ tidyr::separate(.x, allVHitsWithScore, c("allVHitsWithScore", "cloneTRD"), sep = "TRD"))
+
+  #filtrar TRA TRB TRG TRD
+  mA <- lapply(data4, function(x) x[which(is.na(x[,"cloneTRA"])==FALSE), ])
+  mB <- lapply(data4, function(x) x[which(is.na(x[,"cloneTRB"])==FALSE), ])
+  mG <- lapply(data4, function(x) x[which(is.na(x[,"cloneTRG"])==FALSE), ])
+  mD <- lapply(data4, function(x) x[which(is.na(x[,"cloneTRD"])==FALSE), ])
+
+  #####TRA
+  if(column == "TRA.aa") {
+    #Armar Dataframe para TRA
+    data22<- NULL
+    for(i in names(mA)){
+      if (lengths(mA[[i]]["readFraction"]) >= 1 ) {
+        data22[[i]] <- mA[[i]][,c("cloneTRA","readCount")]
+        data22[[i]]["Proportions"]<-prop.table(mA[[i]]["readCount"])
+        colnames(data22[[i]]) <-c("cloneTRA","readCount","Proportions")
+
+      }else {
+        data22[[i]]$cloneTRA <- 0
+        data22[[i]]$readCount<-0
+        data22[[i]]$Proportions <- 0
+        data22[[i]]<- as.data.frame(data22[[i]])
+      }
+    }
+
+    Count_10 <- data.frame()
+
+    for (i in 1:length(data22)) {
+      cumulative_sum <- 0
+      read_count <- 0
+      count_rows <- 0
+
+      for (j in 1:nrow(data22[[i]])) {
+        cumulative_sum <- cumulative_sum + data22[[i]][j, "Proportions"]
+        read_count <- read_count + data22[[i]][j, "readCount"]
+        count_rows <- count_rows + 1
+
+        if (cumulative_sum >= 0.1) {
+
+          break
+        }
+      }
+
+      df_count <- data.frame(Sample = names(data22)[i], read_countTRA = read_count, ProportionsTRA = cumulative_sum, clones_10_TRA = count_rows)
+      df_count <- cbind(df_count, readCount_10_TRA = ifelse(is.nan(df_count$read_countTRA * 0.1 / df_count$ProportionsTRA), 0, df_count$read_countTRA * 0.1 / df_count$ProportionsTRA))
+      Count_10 <- rbind(Count_10, df_count)
+
+    }
+
+    return(Count_10)
+  }
+
+  #####TRB
+  if(column == "TRB.aa") {
+
+
+    #Armar Dataframe para TRB
+    data23<- NULL
+    for(i in names(mB)){
+      if (lengths(mB[[i]]["readFraction"]) >= 1 ) {
+        data23[[i]] <- mB[[i]][,c("cloneTRB","readCount")]
+        data23[[i]]["Proportions"]<-prop.table(mB[[i]]["readCount"])
+        colnames(data23[[i]]) <-c("cloneTRB","readCount","Proportions")
+      }else {
+        data23[[i]]$cloneTRB <- 0
+        data23[[i]]$readCount<-0
+        data23[[i]]$Proportions <- 0
+        data23[[i]]<- as.data.frame(data22[[i]])
+      }
+    }
+    data<-data23
+    Count_10 <- data.frame()
+    for (i in 1:length(data)) {
+      cumulative_sum <- 0
+      read_count <- 0
+      count_rows <- 0
+
+      for (j in 1:nrow(data[[i]])) {
+        cumulative_sum <- cumulative_sum + data[[i]][j, "Proportions"]
+        read_count <- read_count + data[[i]][j, "readCount"]
+        count_rows <- count_rows + 1
+
+        if (cumulative_sum >= 0.1) {
+
+          break
+        }
+      }
+
+      df_count <- data.frame(Sample = names(data)[i], read_countTRB = read_count, ProportionsTRB = cumulative_sum, clones_10_TRB = count_rows)
+      df_count <- cbind(df_count, readCount_10_TRB = ifelse(is.nan(df_count$read_countTRB * 0.1 / df_count$ProportionsTRB), 0, df_count$read_countTRB * 0.1 / df_count$ProportionsTRB))
+      Count_10 <- rbind(Count_10, df_count)
+
+    }
+
+    return(Count_10)
+  }
+
+
+  #####TRG
+  if(column == "TRG.aa") {
+    #Armar Dataframe para TRG
+    data24<- NULL
+    for(i in names(mG)){
+      if (lengths(mG[[i]]["readFraction"]) >= 1 ) {
+        data24[[i]] <- mG[[i]][,c("cloneTRG","readCount")]
+        data24[[i]]["Proportions"]<-prop.table(mG[[i]]["readCount"])
+        colnames(data24[[i]]) <-c("cloneTRG","readCount","Proportions")
+      }else {
+        data24[[i]]$cloneTRG <- 0
+        data24[[i]]$readCount<-0
+        data24[[i]]$Proportions <- 0
+        data24[[i]]<- as.data.frame(data22[[i]])
+      }
+    }
+
+    data<-data24
+    Count_10 <- data.frame()
+    for (i in 1:length(data)) {
+      cumulative_sum <- 0
+      read_count <- 0
+      count_rows <- 0
+
+      for (j in 1:nrow(data[[i]])) {
+        cumulative_sum <- cumulative_sum + data[[i]][j, "Proportions"]
+        read_count <- read_count + data[[i]][j, "readCount"]
+        count_rows <- count_rows + 1
+
+        if (cumulative_sum >= 0.1) {
+
+          break
+        }
+      }
+
+      df_count <- data.frame(Sample = names(data)[i], read_countTRG = read_count, ProportionsTRG = cumulative_sum, clones_10_TRG = count_rows)
+      df_count <- cbind(df_count, readCount_10_TRG = ifelse(is.nan(df_count$read_countTRG * 0.1 / df_count$ProportionsTRG), 0, df_count$read_countTRG * 0.1 / df_count$ProportionsTRG))
+      Count_10 <- rbind(Count_10, df_count)
+
+    }
+
+    return(Count_10)
+  }
+
+  #####TRD
+  if(column == "TRD.aa") {
+    #Armar Dataframe para TRD
+    data25<- NULL
+    for(i in names(mD)){
+      if (lengths(mD[[i]]["readFraction"]) >= 1 ) {
+        data25[[i]] <- mD[[i]][,c("cloneTRD","readCount")]
+        data25[[i]]["Proportions"]<-prop.table(mD[[i]]["readCount"])
+        colnames(data25[[i]]) <-c("cloneTRD","readCount","Proportions")
+      }else {
+        data25[[i]]$cloneTRD <- 0
+        data25[[i]]$readCount<-0
+        data25[[i]]$Proportions <- 0
+        data25[[i]]<- as.data.frame(data25[[i]])
+      }
+    }
+
+    dataD<-data25
+    CountD_10 <- data.frame()
+
+    for (i in 1:length(dataD)) {
+      cumulative_sum <- 0
+      read_count <- 0
+      count_rows <- 0
+
+      for (j in 1:nrow(dataD[[i]])) {
+        cumulative_sum <- cumulative_sum + dataD[[i]][j, "Proportions"]
+        read_count <- read_count + dataD[[i]][j, "readCount"]
+        count_rows <- count_rows + 1
+
+        if (cumulative_sum >= 0.1) {
+
+          break
+        }
+      }
+
+      df_count <- data.frame(Sample = names(dataD)[i], read_countTRD = read_count, ProportionsTRD = cumulative_sum, clones_10_TRD = count_rows)
+      df_count <- cbind(df_count, readCount_10_TRD = ifelse(is.nan(df_count$read_countTRD * 0.1 / df_count$ProportionsTRD), 0, df_count$read_countTRD * 0.1 / df_count$ProportionsTRD))
+      CountD_10 <- rbind(CountD_10, df_count)
+
+
+    }
+
+    return(CountD_10)
+  }
+
+  #####TRGD
+  if(column == "TRGD.aa") {
+    #Armar Dataframe para TRG
+    data24<- NULL
+    for(i in names(mG)){
+      if (lengths(mG[[i]]["readFraction"]) >= 1 ) {
+        data24[[i]] <- mG[[i]][,c("cloneTRG","readCount")]
+        data24[[i]]["Proportions"]<-prop.table(mG[[i]]["readCount"])
+        colnames(data24[[i]]) <-c("cloneTRG","readCount","Proportions")
+      }else {
+        data24[[i]]$cloneTRG <- 0
+        data24[[i]]$readCount<-0
+        data24[[i]]$Proportions <- 0
+        data24[[i]]<- as.data.frame(data22[[i]])
+      }
+    }
+
+    ###
+    dataG<-data24
+    CountG_10 <- data.frame()
+    for (i in 1:length(dataG)) {
+      cumulative_sum <- 0
+      read_count <- 0
+      count_rows <- 0
+
+      for (j in 1:nrow(dataG[[i]])) {
+        cumulative_sum <- cumulative_sum + dataG[[i]][j, "Proportions"]
+        read_count <- read_count + dataG[[i]][j, "readCount"]
+        count_rows <- count_rows + 1
+
+        if (cumulative_sum >= 0.1) {
+
+          break
+        }
+      }
+
+      df_count <- data.frame(Sample = names(dataG)[i], read_countTRG = read_count, ProportionsTRGD = cumulative_sum, clones_10_TRGD = count_rows)
+      CountG_10 <- rbind(CountG_10, df_count)
+    }
+
+    #Armar Dataframe para TRD
+    data25<- NULL
+    for(i in names(mD)){
+      if (lengths(mD[[i]]["readFraction"]) >= 1 ) {
+        data25[[i]] <- mD[[i]][,c("cloneTRD","readCount")]
+        data25[[i]]["Proportions"]<-prop.table(mD[[i]]["readCount"])
+        colnames(data25[[i]]) <-c("cloneTRD","readCount","Proportions")
+      }else {
+        data25[[i]]$cloneTRD <- 0
+        data25[[i]]$readCount<-0
+        data25[[i]]$Proportions <- 0
+        data25[[i]]<- as.data.frame(data25[[i]])
+      }
+    }
+
+    dataD<-data25
+    CountD_10 <- data.frame()
+
+    for (i in 1:length(dataD)) {
+      cumulative_sum <- 0
+      read_count <- 0
+      count_rows <- 0
+
+      for (j in 1:nrow(dataD[[i]])) {
+        cumulative_sum <- cumulative_sum + dataD[[i]][j, "Proportions"]
+        read_count <- read_count + dataD[[i]][j, "readCount"]
+        count_rows <- count_rows + 1
+
+        if (cumulative_sum >= 0.1) {
+
+          break
+        }
+      }
+
+      df_count <- data.frame(Sample = names(dataD)[i], read_countTRD = read_count, ProportionsTRGD = cumulative_sum, clones_10_TRGD = count_rows)
+      CountD_10 <- rbind(CountD_10, df_count)
+    }
+
+  # Combinar los dos DataFrames
+  combined_CountD_10 <- dplyr::bind_rows(CountG_10, CountD_10)
+
+  # Reemplazar los valores NA con 0 en la columna richness_TRGD_CDR3aa
+  combined_CountD_10[is.na(combined_CountD_10)] <- 0
+
+  ###OTRA
+  result_CountGD_10 <- combined_CountD_10 %>%
+    dplyr::group_by(Sample) %>%
+    dplyr::summarize(
+      rows_countTGD_10 = max(read_countTRG, read_countTRD, na.rm = TRUE),
+      ProportionsTRGD = ifelse(rows_countTGD_10 > 0, ProportionsTRGD[which.max(c(read_countTRG, read_countTRD))], 0),
+      clones_10_TRGD = ifelse(rows_countTGD_10 > 0, clones_10_TRGD[which.max(c(read_countTRG, read_countTRD))], 0),
+      read_countTRG = max(read_countTRG),
+      read_countTRD = max(read_countTRD),
+      readCount_10_TRGD = ifelse(is.nan(rows_countTGD_10 * 0.1 / ProportionsTRGD), 0, rows_countTGD_10 * 0.1 / ProportionsTRGD)
+    )
+  # Resultado final con la columna richness_TRGD_CDR3aa
+  Result_countGD_10<- as.data.frame(result_CountGD_10[,c("Sample","rows_countTGD_10", "ProportionsTRGD","clones_10_TRGD","readCount_10_TRGD")])
+  Result_countGD_10<- as.data.frame(result_CountGD_10[,c("Sample","clones_10_TRGD","readCount_10_TRGD")])
+  #Result_countGD_10<- as.data.frame(result_CountGD_10)
+
+  return(Result_countGD_10)
+  }
+}
