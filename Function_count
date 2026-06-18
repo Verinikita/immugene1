@@ -1,3 +1,34 @@
+#' Calculate clonal dominance and abundance at the 10% read threshold
+#'
+#' Computes metrics describing the contribution of dominant clonotypes within
+#' a TCR repertoire. For each sample and selected chain (TRA, TRB, TRG, TRD
+#' or TRGD), clonotypes are ranked according to their read counts and their
+#' cumulative abundance is calculated until reaching 10% of the total reads.
+#'
+#' Two complementary metrics are returned:
+#' \itemize{
+#' \item \strong{Clonal dominance}: the minimum number of clonotypes required
+#' to account for 10% of the total reads in the repertoire.
+#' \item \strong{Clonal abundance}: the estimated number of reads corresponding
+#' to that 10% threshold.
+#' }
+#'
+#' Lower values of clonal dominance indicate that a small number of highly
+#' expanded clonotypes contribute disproportionately to the repertoire,
+#' reflecting a more oligoclonal profile.
+#'
+#' @param data_list A list of MiXCR output data frames.
+#' @param column Character string indicating the receptor chain to analyze.
+#' Supported values are "TRA.aa", "TRB.aa", "TRG.aa", "TRD.aa" and
+#' "TRGD.aa".
+#'
+#' @return A data frame containing sample identifiers and chain-specific
+#' metrics describing clonal dominance and abundance at the 10% cumulative
+#' read threshold.
+#'
+#' @export
+
+
 fun_count<- function(data_list, column){
 
   #1FiltroIG de los datos completos
